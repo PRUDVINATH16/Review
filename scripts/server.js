@@ -1,0 +1,41 @@
+// server.js
+import express from "express";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+import cors from "cors";
+
+const app = express();
+app.use(cors({
+  'methods': 'POST',
+  'origin': '*',
+  'allowedHeaders': 'Content-Type'
+}));
+app.use(express.json());
+
+const model = new ChatGoogleGenerativeAI({
+  model: "gemini-2.0-flash",
+  apiKey: 'AIzaSyCoyWGAiVO_JjKWIq8oa1-g7XkAK0cngRs',
+});
+
+const prompt1 = ChatPromptTemplate.fromTemplate(
+  "Translate this english movie into {language}. Review: {review}"
+);
+const prompt2 = ChatPromptTemplate.fromTemplate(
+  "Summarize this {language} review in {language} only. Review: {review}"
+);
+const parser = new StringOutputParser();
+
+app.post("/summarize", async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin','*')
+  const { review, language } = req.body;
+
+  const chain1 = prompt1.pipe(model).pipe(parser);
+    const translatedReview = await chain1.invoke({ review, language });
+
+    const chain2 = prompt2.pipe(model).pipe(parser);
+    const summarizedReview = await chain2.invoke({ review: translatedReview, language });
+  res.json({ output: summarizedReview });
+});
+
+app.listen(3000, () => console.log("Server running on port 3000"));

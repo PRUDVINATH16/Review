@@ -7,6 +7,7 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 
 dotenv.config();
+GOOGLE_API_KEY = 'AIzaSyCoyWGAiVO_JjKWIq8oa1-g7XkAK0cngRs';
 const app = express();
 app.use(cors({
   'methods': 'POST',

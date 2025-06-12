@@ -7,7 +7,7 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 
 dotenv.config();
-GOOGLE_API_KEY = 'AIzaSyCoyWGAiVO_JjKWIq8oa1-g7XkAK0cngRs';
+const API_KEY = process.env.GOOGLE_API_KEY;
 const app = express();
 app.use(cors({
   'methods': 'POST',
@@ -18,6 +18,7 @@ app.use(express.json());
 
 const model = new ChatGoogleGenerativeAI({
   model: "gemini-2.0-flash",
+  apiKey: API_KEY,
 });
 
 const prompt1 = ChatPromptTemplate.fromTemplate(

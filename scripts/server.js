@@ -5,6 +5,20 @@ import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import cors from "cors";
 import * as dotenv from "dotenv";
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Fix __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve index.html
+app.use(express.static(__dirname));
+
+// Optional: For any other route, serve index.html
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
 
 dotenv.config();
 const API_KEY = process.env.GOOGLE_API_KEY;

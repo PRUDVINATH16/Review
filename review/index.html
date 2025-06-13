@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REVIEW BRO</title>
+  <link rel="stylesheet" href="styles/review.css">
+  <link rel="shortcut icon" href="img/feedback.png" type="image/x-icon">
+</head>
+
+<body>
+  <div class="main-container">
+    <h1 class="heading">Review Converter</h1>
+    <p class="info">Paste your code translate it, and get it by summarized</p>
+    <p class="info">It is done by using gemini's llms and langchain - the sequential chain...</p>
+    <textarea class="review-input" type="text" placeholder="Paste your review..." rows="5" cols="70" required></textarea>
+    <div name="languages-dropdown" id="languages-dropdown">
+      <span class="language">Telugu</span> (Hover to change)
+
+      <div class="options">
+        <option class="option" value="Telugu">Telugu</option>
+        <option class="option" value="Hindi">Hindi</option>
+        <option class="option" value="English">English</option>
+        <option class="option" value="Tamil">Tamil</option>
+        <option class="option" value="Malayalam">Malayalam</option>
+        <option class="option" value="Kanada">Kanada</option>
+      </div>
+    </div>
+
+    <button class="get-result">Get Result</button>
+  </div>
+
+  <div class="loader" id="loader"></div>
+  <div class="review-output">
+    <!-- js code goes here -->
+  </div>
+
+  <script src="scripts/review.js" type="module"></script>
+</body>
+
+</html>

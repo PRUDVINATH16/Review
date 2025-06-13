@@ -72,7 +72,7 @@ resultBtn.addEventListener('click', async () => {
     loader.style.display = 'none';
   }
   else {
-    const res = await fetch('http://localhost:3000/summarize', {
+    const res = await fetch('/summarize', {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

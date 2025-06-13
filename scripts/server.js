@@ -9,6 +9,16 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 // Fix __dirname in ES modules
+dotenv.config();
+const API_KEY = process.env.GOOGLE_API_KEY;
+const app = express();
+app.use(cors({
+  'methods': 'POST',
+  'origin': '*',
+  'allowedHeaders': 'Content-Type'
+}));
+app.use(express.json());
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -19,16 +29,6 @@ app.use(express.static(__dirname));
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
-
-dotenv.config();
-const API_KEY = process.env.GOOGLE_API_KEY;
-const app = express();
-app.use(cors({
-  'methods': 'POST',
-  'origin': '*',
-  'allowedHeaders': 'Content-Type'
-}));
-app.use(express.json());
 
 const model = new ChatGoogleGenerativeAI({
   model: "gemini-2.0-flash",

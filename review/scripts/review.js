@@ -72,17 +72,37 @@ resultBtn.addEventListener('click', async () => {
     loader.style.display = 'none';
   }
   else {
-    const res = await fetch('/summarize', {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ review, language })
-    });
+    try {
+      const res = await fetch('https://review-converter.onrender.com/summarize', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ review, language })
+      });
+      console.log(res)
+      const data = await res.json();
+      console.log(data)
+      result_box.innerHTML = `
+      ${data.output}<br><br>
+      Sentiment: ${data.sentimentt}<br><br>
+      <button class="copy-btn">Copy</button>
+      `;
 
-    const data = await res.json();
-    result_box.innerText = data.output;
-    loader.style.display = 'none';
+      setTimeout(() => {
+        const copyBtn = document.querySelector('.copy-btn')
+        copyBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText(data.output);
+          copyBtn.innerHTML = `Text Copied 👍`
+        });
+      }, 100);
+    }
+    catch (error) {
+      result_box.innerHTML = 'Oops! Something went wrong. Try again later';
+      console.log(error)
+    }
+    finally {
+      loader.style.display = 'none';
+    }
   }
-
 });

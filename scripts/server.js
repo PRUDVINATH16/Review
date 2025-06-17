@@ -1,108 +1,67 @@
-const resultBtn = document.querySelector('.get-result');
-const langsDropdown = document.querySelector('#languages-dropdown');
-const loader = document.getElementById('loader');
-const result_box = document.querySelector('.review-output');
+// server.js
+import express from "express";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+import cors from "cors";
+import * as dotenv from "dotenv";
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-function adding_lister_to_option() {
-  document.querySelectorAll('.option').forEach((option) => {
-    option.addEventListener('click', () => {
-      langsDropdown.innerHTML = `
-      <span class="language">${option.value}</span> (Hover to change)
+// Fix __dirname in ES modules
+dotenv.config();
+const API_KEY = process.env.GOOGLE_API_KEY;
+const app = express();
+app.use(cors({
+  'methods': 'POST',
+  'origin': '*',
+  'allowedHeaders': 'Content-Type'
+}));
+app.use(express.json());
 
-      <div class="options">
-        <option class="option" value="Telugu">Telugu</option>
-        <option class="option" value="Hindi">Hindi</option>
-        <option class="option" value="English">English</option>
-        <option class="option" value="Tamil">Tamil</option>
-        <option class="option" value="Malayalam">Malayalam</option>
-        <option class="option" value="Kanada">Kanada</option>
-      </div>
-    `;
-      resultBtn.style.display = 'block';
-      adding_lister_to_option();
-    });
-  });
-}
-adding_lister_to_option();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-langsDropdown.addEventListener('mouseenter', () => {
-  document.querySelector('.options').style.display = 'flex';
-  resultBtn.style.display = 'none';
+// Serve index.html
+app.use(express.static(__dirname));
+
+// Optional: For any other route, serve index.html
+app.use(express.static(path.join(__dirname, "../review")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../review/index.html"));
 });
 
-langsDropdown.addEventListener('mouseleave', () => {
-  document.querySelector('.options').style.display = 'none';
-  resultBtn.style.display = 'block';
+const model = new ChatGoogleGenerativeAI({
+  model: "gemini-2.0-flash",
+  apiKey: API_KEY,
 });
 
-resultBtn.addEventListener('click', async () => {
-  /* API_KEY = 'AIzaSyCoyWGAiVO_JjKWIq8oa1-g7XkAK0cngRs';
-  const model = new ChatGoogleGenerativeAI({
-    modelName: "gemini-2.0-flash",
-    apiKey: API_KEY,
-  });
+const prompt1 = ChatPromptTemplate.fromTemplate(
+  "Translate this english movie into {language}. Review: {review}"
+);
+const prompt2 = ChatPromptTemplate.fromTemplate(
+  "Summarize this {language} review in {language} only. Review: {review}"
+);
+const prompt3 = ChatPromptTemplate.fromTemplate(
+  "Analyze the following movie review and respond with one of the following sentiments: HIT (positive), FLOP (negative), or AVERAGE (neutral). Review: {review}"
+);
+const parser = new StringOutputParser();
 
-  const prompt1 = ChatPromptTemplate.fromTemplate(
-    "Translate this english movie into {language}. Review: {review}"
-  );
-
-  const prompt2 = ChatPromptTemplate.fromTemplate(
-    "Summarize this {language} review in {language} only. Review: {review}"
-  );
-
-  const parser = new StringOutputParser();
+app.post("/summarize", async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  const { review, language } = req.body;
 
   const chain1 = prompt1.pipe(model).pipe(parser);
+  const translatedReview = await chain1.invoke({ review, language });
 
   const chain2 = prompt2.pipe(model).pipe(parser);
+  const summarizedReview = await chain2.invoke({ review: translatedReview, language });
 
-  const finalChain = chain1.pipe(chain2)
-
-  const result = await finalChain.invoke({ review, language });
-  console.log(result)
-  document.querySelector('.review-output').innerHTML = result; */
-
-  let review = document.querySelector('.review-input').value;
-  let language = document.querySelector('.language').innerHTML;
-  result_box.innerHTML = '';
-  loader.style.display = 'block';
-
-  if (review == '') {
-    document.querySelector('.review-output').innerHTML = "Please provide some review text for translate and summarize.";
-    loader.style.display = 'none';
-  }
-  else {
-    try {
-      const res = await fetch('https://review-converter.onrender.com/summarize', {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ review, language })
-      });
-      console.log(res)
-      const data = await res.json();
-      console.log(data)
-      result_box.innerHTML = `
-      ${data.output}<br><br>
-      Sentiment: ${data.sentimentt}<br><br>
-      <button class="copy-btn">Copy</button>
-      `;
-
-      setTimeout(() => {
-        const copyBtn = document.querySelector('.copy-btn')
-        copyBtn.addEventListener('click', () => {
-          navigator.clipboard.writeText(data.output);
-          copyBtn.innerHTML = `Text Copied 👍`
-        });
-      }, 100);
-    }
-    catch (error) {
-      result_box.innerHTML = 'Oops! Something went wrong. Try again later';
-      console.log(error)
-    }
-    finally {
-      loader.style.display = 'none';
-    }
-  }
+  const chain3 = prompt3.pipe(model).pipe(parser);
+  const sentiment = await chain3.invoke({ review });
+  console.log(sentiment);
+  res.json({ output: summarizedReview, sentimentt: sentiment});
 });
+
+app.listen(3000, () => console.log("Server running on port 3000"));

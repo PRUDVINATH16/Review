@@ -7,7 +7,7 @@ function adding_lister_to_option() {
   document.querySelectorAll('.option').forEach((option) => {
     option.addEventListener('click', () => {
       langsDropdown.innerHTML = `
-      <span class="language">${option.value}</span> (Hover to change)
+      <span class="language">${option.value}</span> <img src="img/down-arrow.png" alt="down-arrow">
 
       <div class="options">
         <option class="option" value="Telugu">Telugu</option>
@@ -80,21 +80,44 @@ resultBtn.addEventListener('click', async () => {
         },
         body: JSON.stringify({ review, language })
       });
-      console.log(res)
       const data = await res.json();
-      console.log(data)
       result_box.innerHTML = `
       ${data.output}<br><br>
-      Sentiment: ${data.sentimentt}<br><br>
+      Sentiment: ${data.sentimentt}<br>
       <button class="copy-btn">Copy</button>
+      <button class="one-more">One More</button>
+      <button class="delete-storage">Delete History</button>
       `;
 
+      let pastReviews = new Array();
+      let pastReview = JSON.parse(localStorage.getItem('past-reviews')) || [];
+      pastReviews = pastReview;
+      pastReviews.push({ review: review, output: data.output });
+      if (pastReviews.length >= 5) {
+        pastReviews.shift();
+      }
+      localStorage.setItem('past-reviews', JSON.stringify(pastReviews));
+
       setTimeout(() => {
-        const copyBtn = document.querySelector('.copy-btn')
+        const copyBtn = document.querySelector('.copy-btn');
         copyBtn.addEventListener('click', () => {
           navigator.clipboard.writeText(data.output);
           copyBtn.innerHTML = `Text Copied 👍`
         });
+
+        const oneMore = document.querySelector('.one-more');
+        oneMore.addEventListener('click', () => {
+          document.querySelector('.review-input').value = '';
+          result_box.innerHTML = '';
+          setPastReviews();
+        });
+
+        document.querySelector('.delete-storage').addEventListener('click', () => {
+          localStorage.removeItem('past-reviews');
+
+          document.querySelector('.review-input').value = '';
+          result_box.innerHTML = '';
+        })
       }, 100);
     }
     catch (error) {
@@ -105,4 +128,25 @@ resultBtn.addEventListener('click', async () => {
       loader.style.display = 'none';
     }
   }
+});
+
+async function setPastReviews() {
+  let pastReviews = await JSON.parse(localStorage.getItem('past-reviews')) || [];
+  let pastContainer = document.querySelector('.past-reviewss');
+  let pastHTML = '';
+
+  pastReviews.forEach((review) => {
+    pastHTML += `
+      <div class="user-input"><p>${review.review}</p></div>
+      <div class="ai-output"><p>${review.output}<br>
+      </p>
+      </div><br>
+    `;
+  });
+
+  pastContainer.innerHTML = pastHTML;
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  setPastReviews();
 });

@@ -7,7 +7,7 @@ function adding_lister_to_option() {
   document.querySelectorAll('.option').forEach((option) => {
     option.addEventListener('click', () => {
       langsDropdown.innerHTML = `
-      <span class="language">${option.value}</span> <img src="img/down-arrow.png" alt="down-arrow">
+      <span class="language">${option.value} <img src="img/down-arrow.png" alt="down-arrow"></span>
 
       <div class="options">
         <option class="option" value="Telugu">Telugu</option>

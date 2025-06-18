@@ -117,6 +117,7 @@ resultBtn.addEventListener('click', async () => {
 
           document.querySelector('.review-input').value = '';
           result_box.innerHTML = '';
+          setPastReviews();
         })
       }, 100);
     }

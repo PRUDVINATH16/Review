@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>REVIEW BRO</title>
+  <title>REVIEW CONVERTER</title>
   <link rel="stylesheet" href="styles/review.css">
   <link rel="shortcut icon" href="img/feedback.png" type="image/x-icon">
 </head>
@@ -14,9 +14,16 @@
     <h1 class="heading">Review Converter</h1>
     <p class="info">Paste your code translate it, and get it by summarized</p>
     <p class="info">It is done by using gemini's llms and langchain - the sequential chain...</p>
-    <textarea class="review-input" type="text" placeholder="Paste your review..." rows="5" cols="70" required></textarea>
+    <div class="past-reviewss">
+      <div class="user-input">
+        <p>lmet consectetur adipisicing elit. Alias inventore quia adipisci in ut temporibus maxime non quae nobis praesentium libero nostrum tatum pariatur nam omnis quisquam. Error ab, natus consequuntur nam, quis minus illo nesci </p></div>
+      <div class="ai-output">
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias inventore quia adipisci in ut temporibus maxime non quae nobis praesentium libero nostrum cum voluptatum numquam laboriosam dolorem dignissimos, quidem expedita illum placeat atque, unde doloremque. orro, deserunt, rem nemo ipsam non vitae? Magni.</p>
+      </div>
+    </div>
+    <textarea class="review-input" type="text" placeholder="Write or paste your review..." rows="5" cols="70" required></textarea>
     <div name="languages-dropdown" id="languages-dropdown">
-      <span class="language">Telugu</span> (Hover to change)
+      <span class="language">Telugu <img src="img/down-arrow.png" alt="down-arrow"></span> 
 
       <div class="options">
         <option class="option" value="Telugu">Telugu</option>
@@ -36,7 +43,7 @@
     <!-- js code goes here -->
   </div>
 
-  <script src="scripts/review.js" type="module"></script>
+  <script src="scripts/review.js" type="module" defer></script>
 </body>
 
 </html>
